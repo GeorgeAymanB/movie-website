@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SprintsFlex</title>
+</head>
+<body>
+    <h1>Welcome to <span style="color: red;">SprintsFlex</span></h1>
+    <div class="search-area">
+        <input id="searchbar" type="text" id="search" placeholder="Search for a movie">
+        <img id="searchicon" src="search.png" onclick="searchMovies()">
+
+        <button id="editbutton">Edit Movies</button>
+    </div>
+
+    <div class="movie-container" id="movie-container">
+        <!-- Movies will be displayed here -->
+    </div>
+
+    <div id="addmovie" style="background-color: rgba(139, 113, 19, 0.507);">
+        <p style="color: rgb(249, 240, 223); padding: 10px; font-weight: bolder;">Wanna add a movie??</p>
+        <form id="movieform" action="/add" method="post">
+            <label for="moviename" style="margin-right: 18px">Title</label>
+            <input type="text" id="title" name="moviename" required><br><br>
+            <label for="movieimg" style="margin-right: 2px">Poster</label>
+            <input type="url" id="poster" name="movieimg" required><br><br>
+            <button id="submit" type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("submit").addEventListener("click", function() {
+            alert("Refresh to display updated movies!");
+        });
+
+        fetch('/movies')
+            .then(response => response.json())
+            .then(data => {
+                const numberOfMovies = data.length;
+                const movieContainer = document.getElementById('movie-container');
+
+                for (let i = 0; i < numberOfMovies; i++) {
+                    const movieCard = document.createElement('div');
+                    movieCard.id = `movie-card-${i}`;
+                    movieCard.className = 'movie-card';
+
+                    movieCard.innerHTML = `
+                        <img class="edit" src="edit.png" style="display:none">
+                        <img class="delete" src="delete.png" style="display:none">
+                        <h2>${data[i].moviename}</h2>
+                        <img id="movieposter" src="${data[i].movieimg}">
+                        <p id="movieid">${data[i]._id}</p>
+                        <input type="text" id="editMovieName" class="hidden" value="${data[i].moviename}">
+                        <button class="save" style="display:none;">Save Changes</button>
+                    `;
+
+                    movieContainer.appendChild(movieCard);
+
+                    const deleteImage = movieCard.querySelector('.delete');
+                    deleteImage.addEventListener('click', () => {
+                        deleteMovie(data[i]._id);
+                        location.reload();
+                    });
+
+                    const editImage = movieCard.querySelector('.edit');
+                    editImage.addEventListener('click', () => {
+                        const editMovieNameInput = movieCard.querySelector('#editMovieName');
+                        const saveButton = movieCard.querySelector('.save');
+                        const h2 = movieCard.querySelector('h2');
+
+                        editMovieNameInput.style.display = 'inline-block';
+                        saveButton.style.display = 'inline-block';
+                        h2.style.display = 'none';
+                    });
+
+                    const saveButton = movieCard.querySelector('.save');
+                    saveButton.addEventListener('click', () => {
+                        const editMovieNameInput = movieCard.querySelector('#editMovieName');
+                        const h2 = movieCard.querySelector('h2');
+                        const newMovieName = editMovieNameInput.value;
+
+                        updateMovie(data[i]._id, newMovieName);
+
+                        h2.textContent = newMovieName;
+                        h2.style.display = 'block';
+                        editMovieNameInput.style.display = 'none';
+                        saveButton.style.display = 'none';
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching movie data:', error);
+            });
+
+        const editButton = document.getElementById("editbutton");
+        editButton.addEventListener("click", toggleEditDeleteImages);
+
+        function toggleEditDeleteImages() {
+            const editImages = document.querySelectorAll('.edit');
+            const deleteImages = document.querySelectorAll('.delete');
+
+            editImages.forEach(img => {
+                img.style.display = img.style.display === 'none' ? 'inline-block' : 'none';
+            });
+
+            deleteImages.forEach(img => {
+                img.style.display = img.style.display === 'none' ? 'inline-block' : 'none';
+            });
+        }
+
+        async function deleteMovie(movieID) {
+            try {
+                const response = await fetch(`/delete/${movieID}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.status === 204) {
+                    console.log('Movie deleted!');
+                } else if (response.status === 404) {
+                    console.log('Movie not found');
+                } else {
+                    console.error('Error deleting movie');
+                }
+            } catch (error) {
+                console.error('Error deleting movie:', error);
+            }
+        }
+
+        async function updateMovie(movieID, newMovieName) {
+            try {
+                const response = await fetch(`/update/${movieID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ newMovieName }),
+                });
+
+                if (response.status === 204) {
+                    console.log('Movie updated!');
+                } else if (response.status === 404) {
+                    console.log('Movie not found');
+                } else {
+                    console.error('Error updating movie');
+                }
+            } catch (error) {
+                console.error('Error updating movie:', error);
+            }
+        }
+
+
+        function searchMovies() {
+        const searchInput = document.getElementById('searchbar').value.toLowerCase();
+        const movieCards = document.querySelectorAll('.movie-card');
+
+        movieCards.forEach((card) => {
+            const movieTitle = card.querySelector('h2').textContent.toLowerCase();
+
+            if (movieTitle.includes(searchInput)) {
+            card.classList.remove('hidden-card');
+            } else {
+            card.classList.add('hidden-card');
+            }
+        });
+        }
+
+    </script>
+
+</body>
+</html>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-image: url(wallpaper.jpg);
+        background-size: 100% 250%;
+        background-repeat: no-repeat;
+    }
+
+    h1 {
+        font-size: 50px;
+        margin-top: 60px;
+        color: seashell;
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: black;
+    }
+
+    .search-area {
+        margin-top: 30px;
+        margin-bottom: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #searchbar {
+        margin: 10px;
+        width: 300px;
+        height: 30px;
+    }
+
+    #searchicon {
+        width: 35px;
+    }
+
+    #searchicon:hover {
+        filter: brightness(120%);
+    }
+
+    #editbutton {
+        margin-left: 20px;
+        background-color: rgba(32, 11, 48, 0.578);
+        color: antiquewhite;
+    }
+
+    .movie-container {
+        margin-left: 70px;
+        margin-right: 70px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .movie-card {
+        background-color: rgba(221, 241, 246, 0.693);
+        width: 250px;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.429);
+        text-align: center;
+
+        opacity: 0;
+        animation: fadeIn 0.5s ease-in-out 0s 1 normal forwards;
+    }
+
+    #movieposter {
+        width: 220px;
+        animation: fadein 0.5s ease-in-out 0s 1 normal forwards;
+    }
+
+    #movieid {
+        color: darkred;
+        font-size: x-small;
+    }
+
+    h2 {
+        margin-top: 0px;
+        font-size: 20px;
+        font-family:'Times New Roman', Times, serif;
+    }
+
+    .edit {
+        width: 20px;
+    }
+
+    .edit:hover {
+        cursor: pointer;
+        opacity: 70%;
+    }
+
+    .delete {
+        width: 20px;
+    }
+
+    .delete:hover {
+        cursor: pointer;
+        opacity: 70%;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .hidden-card {
+    display: none;
+    animation: fadeOut 0.5s ease-in-out 0s 1 normal forwards;
+  }
+
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+</style>
