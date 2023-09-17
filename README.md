@@ -2,6 +2,8 @@
 This is a simple movie web app built using the Express.js framework that allows users to manage a collection of movies in mongoDB. Users can list all movies, add new movies, edit existing movies, and delete movies. Additionally, the application logs every incoming request to a log.txt file using middleware.
 This code also creates the database "movies" itself and the collection "moviedata" if they didn't exist already.
 
+**NOTE** the html file (index.html) contains all frontend code (HTML, CSS and JS)
+
 # Features
 
 1.List All Movies: Users can view a list of all movies in the collection.
