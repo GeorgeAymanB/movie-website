@@ -22,9 +22,19 @@ This is a simple movie web app built using the Express.js framework that allows 
 # Setup and usage
 1.Clone this repository to your local machine.
 
-2.Install the required dependencies using npm install.
+2.Install the required dependencies using npm install:
 
-3.Start the application with npm start.
+	-npm init -y
+	
+	-npm install express
+	
+	-npm install mongoose
+	
+	-npm install body-parser cors dotenv
+	
+	-npm install nodemon
+
+3.Start the application with by running **node app.js** in the terminal
 
 4.Access the application in your web browser at http://localhost:3001
 #
