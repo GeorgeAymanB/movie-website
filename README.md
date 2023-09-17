@@ -1,5 +1,6 @@
 # movie-website
 This is a simple movie web app built using the Express.js framework that allows users to manage a collection of movies in mongoDB. Users can list all movies, add new movies, edit existing movies, and delete movies. Additionally, the application logs every incoming request to a log.txt file using middleware.
+This code also creates the database "movies" itself and the collection "moviedata" if they didn't exist already.
 
 # Features
 
@@ -17,8 +18,11 @@ This is a simple movie web app built using the Express.js framework that allows 
 
 -Express.js: The core framework for building the web server and handling HTTP requests.
 
--MongoBD: used to store and handle movie data
+-MongoBD: used to store and handle movie data 
 
+	-Mongo connection URI:
+		mongodb://localhost:27017
+ 
 # Setup and usage
 1.Clone this repository to your local machine.
 
