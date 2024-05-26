@@ -17,7 +17,7 @@ This code also creates the database "movies" itself and the collection "moviedat
 5.Logging: The application logs every incoming HTTP request to a log.txt file. The log should include details such as the request method, URL, timestamp, and any relevant request headers.
 
 # Technologies Used
-
+-NodeJS 
 -Express.js: The core framework for building the web server and handling HTTP requests.
 
 -MongoBD: used to store and handle movie data 
