@@ -18,6 +18,7 @@ This code also creates the database "movies" itself and the collection "moviedat
 
 # Technologies Used
 -NodeJS 
+
 -Express.js: The core framework for building the web server and handling HTTP requests.
 
 -MongoBD: used to store and handle movie data 
